@@ -33,10 +33,12 @@ const postLogin = async (req: Request, res: Response) => {
             return res.status(200).json({ token, user });
         }
 
+        console.log("invalid credentials");
         return res
             .status(400)
             .json({ msg: "Invalid credentials. Please try again" });
     } catch (err) {
+        console.log("Something went wrong. Please try again");
         return res
             .status(500)
             .json({ msg: "Something went wrong. Please try again" });
