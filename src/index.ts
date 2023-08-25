@@ -49,6 +49,8 @@ interface DecodedToken {
 app.post("/api/prompts", async (req, res) => {
     console.log("inside post for prompts");
 
+    console.log("headersss ", req.headers);
+
     const token = req.headers["x-auth-token"] as string;
 
     const promptValue = req.body.promptValue;
