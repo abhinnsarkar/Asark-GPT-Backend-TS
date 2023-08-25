@@ -53,12 +53,16 @@ app.post("/api/prompts", async (req, res) => {
 
     const token = req.headers["x-auth-token"] as string;
 
+    console.log("token in indexts is ", token);
+
     const promptValue = req.body.promptValue;
 
     if (!token) {
+        console.log("no token");
         return res.status(401).json({ msg: "No Token. Authorization Denied." });
     }
     try {
+        console.log("yes token");
         const decoded = jwt.verify(
             token,
             process.env.jwtSecret || ""
