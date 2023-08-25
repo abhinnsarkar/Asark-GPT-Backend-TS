@@ -1,6 +1,6 @@
 // const fetch = require("node-fetch");
 import express from "express";
-import fetch from "node-fetch";
+// import fetch from "node-fetch";
 import mongoose from "mongoose";
 
 import cors from "cors";
