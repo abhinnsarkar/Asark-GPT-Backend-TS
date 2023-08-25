@@ -1,4 +1,5 @@
 import express from "express";
+import fetch from "node-fetch";
 import mongoose from "mongoose";
 
 import cors from "cors";
@@ -46,6 +47,25 @@ interface DecodedToken {
     exp: number;
 }
 
+interface OpenAIResponse {
+    id: string;
+    object: string;
+    created: number;
+    model: string;
+    choices: Choice[];
+}
+
+interface Choice {
+    message: Message;
+    finish_reason: string;
+    index: number;
+}
+
+interface Message {
+    role: string;
+    content: string;
+}
+
 app.post("/api/prompts", async (req, res) => {
     console.log("inside post for prompts");
 
@@ -87,7 +107,8 @@ app.post("/api/prompts", async (req, res) => {
                 "https://api.openai.com/v1/chat/completions",
                 options
             );
-            const data = await response.json();
+            // const data = await response.json();
+            const data = (await response.json()) as OpenAIResponse;
             console.log(data);
             const aiResponse = data.choices[0].message.content;
             const message = {
