@@ -1,25 +1,24 @@
-// const fetch = require("node-fetch");
 import express from "express";
-// import fetch from "node-fetch";
 import fetch from "node-fetch-commonjs";
 import mongoose from "mongoose";
 
 import cors from "cors";
 
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
 dotenv.config();
 
 import authRoutes from "./routes/authRoutes";
 import apiRoutes from "./routes/apiRoutes";
 
-// for chats
 import Chat from "./models/Chat";
 import jwt from "jsonwebtoken";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Connect to MongoDB
+console.log("CONNNNNECTIONNNNNNNNN", process.env.DB);
+// console.log("CONNNNNECTIONNNNNNNNN", process.env);
+
 mongoose
     .connect(process.env.DB || "", {})
     .then(() => {
@@ -34,7 +33,6 @@ mongoose
         console.error("Error connecting to MongoDB:", error);
     });
 
-// Define and use routes here
 app.use(express.json());
 app.use(cors());
 app.use("/api/auth", authRoutes);
@@ -49,18 +47,18 @@ interface DecodedToken {
     exp: number;
 }
 
+interface Choice {
+    message: Message;
+    finish_reason: string;
+    index: number;
+}
+
 interface OpenAIResponse {
     id: string;
     object: string;
     created: number;
     model: string;
     choices: Choice[];
-}
-
-interface Choice {
-    message: Message;
-    finish_reason: string;
-    index: number;
 }
 
 interface Message {

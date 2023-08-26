@@ -28,5 +28,6 @@ router.post(
     authControllers.postRegister
 );
 router.post("/login", validator.body(loginSchema), authControllers.postLogin);
+router.post("/delete", authControllers.deleteAccount);
 
 export default router;
