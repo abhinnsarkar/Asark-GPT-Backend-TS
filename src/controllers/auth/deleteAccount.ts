@@ -3,45 +3,47 @@ import User from "../../models/User";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import Chat from "../../models/Chat";
 dotenv.config();
+
+interface DecodedToken {
+    user: {
+        id: string;
+        email: string;
+    };
+    iat: number;
+    exp: number;
+}
 
 const deleteAccount = async (req: Request, res: Response) => {
     try {
-        console.log("delete account event came");
-        console.log("delete req is ", req);
+        console.log("delete event came");
+        const token = req.headers["x-auth-token"] as string;
 
-        // check if user exists
-        // const user = await User.findOne({ email });
+        if (!token) {
+            console.log("no token");
+            return res
+                .status(401)
+                .json({ msg: "No Token. Authorization Denied." });
+        }
 
-        // if (user && (await bcrypt.compare(password, user.password))) {
-        //     console.log("proper credentials");
+        const decoded = jwt.verify(
+            token,
+            process.env.jwtSecret || ""
+        ) as DecodedToken;
+        const userId = decoded.user.id;
+        console.log("user is ", userId);
 
-        //     // send new token
-        //     const payload = {
-        //         user: {
-        //             id: user.id,
-        //             email: user.email,
-        //         },
-        //     };
-        //     // const secretKey = config.get("jwtSecret");
-        //     const secretKey = process.env.jwtSecret || "";
-        //     const expires = { expiresIn: "7d" };
+        await Chat.findOneAndDelete({ user: userId });
+        await User.findByIdAndDelete(userId);
 
-        //     const token = jwt.sign(payload, secretKey, expires);
-        //     console.log("Created token  = ", token);
-
-        //     return res.status(200).json({ token, user });
-        // }
-
-        // console.log("invalid credentials");
-        // return res
-        //     .status(400)
-        //     .json({ msg: "Invalid credentials. Please try again" });
+        console.log("Account Has Been Deleted");
+        return res.status(200).json({ msg: "Account Has Been Deleted" });
     } catch (err) {
         console.log("Something went wrong. Please try again");
-        // return res
-        //     .status(500)
-        //     .json({ msg: "Something went wrong. Please try again" });
+        return res
+            .status(500)
+            .json({ msg: "Something went wrong. Please try again" });
     }
 };
 

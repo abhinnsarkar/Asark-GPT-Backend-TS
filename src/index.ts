@@ -16,9 +16,6 @@ import jwt from "jsonwebtoken";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-console.log("CONNNNNECTIONNNNNNNNN", process.env.DB);
-// console.log("CONNNNNECTIONNNNNNNNN", process.env);
-
 mongoose
     .connect(process.env.DB || "", {})
     .then(() => {
