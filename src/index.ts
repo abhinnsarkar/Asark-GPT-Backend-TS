@@ -63,23 +63,15 @@ interface Message {
     content: string;
 }
 
-app.post("/api/prompts", async (req, res) => {
-    console.log("inside post for prompts");
-
-    console.log("headersss ", req.headers);
-
+app.post("/api/chats", async (req, res) => {
     const token = req.headers["x-auth-token"] as string;
-
-    console.log("token in indexts is ", token);
-
     const promptValue = req.body.promptValue;
 
     if (!token) {
-        console.log("no token");
+        console.error("no token");
         return res.status(401).json({ msg: "No Token. Authorization Denied." });
     }
     try {
-        console.log("yes token");
         const decoded = jwt.verify(
             token,
             process.env.jwtSecret || ""
@@ -104,7 +96,6 @@ app.post("/api/prompts", async (req, res) => {
                 "https://api.openai.com/v1/chat/completions",
                 options
             );
-            // const data = await response.json();
             const data = (await response.json()) as OpenAIResponse;
             console.log(data);
             const aiResponse = data.choices[0].message.content;
@@ -117,19 +108,14 @@ app.post("/api/prompts", async (req, res) => {
                 user,
             });
             if (chats) {
-                console.log("chats already exist");
-                console.log("pushing new message");
                 chats.messages.push(message);
                 await chats.save();
             } else {
-                console.log("creating new chat");
-                console.log("message :", message);
                 const newChat = new Chat({
                     user,
                     messages: [message],
                 });
                 await newChat.save();
-                console.log("saved new chat and msg");
             }
 
             return res.json({ aiResponse });
@@ -138,17 +124,18 @@ app.post("/api/prompts", async (req, res) => {
             return res.status(400).json({ msg: error });
         }
     } catch (error) {
-        console.error("errorrrrrrrr", error);
+        console.error(error);
         return res.status(401).json({ msg: "Token is not valid" });
     }
 });
 
-app.get("/api/prompts", async (req, res) => {
-    console.log("at the server level getting messages");
+app.get("/api/chats", async (req, res) => {
+    console.log("Retrieving chats in backend");
+
     const token = req.headers["x-auth-token"] as string;
 
     if (!token) {
-        console.log("no token in get prompts messages");
+        console.error("no token");
         return res.status(401).json({ msg: "No Token. Authorization Denied." });
     }
     try {
@@ -159,29 +146,29 @@ app.get("/api/prompts", async (req, res) => {
         const user = decoded.user.id;
 
         try {
-            const chats = await Chat.find({ user });
-            console.log("chats retrieved are ", chats);
-            if (chats.length === 0) {
-                const msgs = chats[0];
+            const usersChats = await Chat.find({ user });
+            if (usersChats.length === 0) {
+                const msgs = usersChats[0];
                 return res.json({ msgs });
             } else {
-                const msgs = chats[0].messages;
-                return res.json({ msgs });
+                const chats = usersChats[0].messages;
+                console.log("backend said msgs are ", chats);
+                return res.json({ chats });
             }
         } catch (error) {
             console.error(error);
-            return res.status(400).json({ msg: "error" });
+            return res.status(400).json({ msg: error });
         }
     } catch (error) {
         return res.status(401).json({ msg: "Token is not valid" });
     }
 });
-app.get("/api/prompts/count", async (req, res) => {
-    console.log("at the server level getting messages");
+
+app.get("/api/chats/previous-count", async (req, res) => {
     const token = req.headers["x-auth-token"] as string;
 
     if (!token) {
-        console.log("no token in get prompts messages");
+        console.error("no token");
         return res.status(401).json({ msg: "No Token. Authorization Denied." });
     }
     try {
@@ -193,7 +180,6 @@ app.get("/api/prompts/count", async (req, res) => {
 
         try {
             const chats = await Chat.find({ user });
-            console.log("chats retrieved are ", chats);
             if (chats.length === 0) {
                 const msgs = chats[0];
                 return res.json({ msgs });
@@ -204,7 +190,7 @@ app.get("/api/prompts/count", async (req, res) => {
             }
         } catch (error) {
             console.error(error);
-            return res.status(400).json({ msg: "error" });
+            return res.status(400).json({ msg: error });
         }
     } catch (error) {
         return res.status(401).json({ msg: "Token is not valid" });
