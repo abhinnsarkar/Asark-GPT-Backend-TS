@@ -31,7 +31,10 @@ mongoose
     });
 
 app.use(express.json());
-const allowedOrigins = ["https://asark-gpt.onrender.com"];
+const allowedOrigins = [
+    "https://asark-gpt.onrender.com",
+    "http://localhost:3000/",
+];
 
 const corsOptions = {
     origin: (
@@ -46,7 +49,8 @@ const corsOptions = {
     },
 };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors);
 
 app.use("/api/auth", authRoutes);
 app.use("/api", apiRoutes);

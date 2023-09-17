@@ -7,9 +7,9 @@ dotenv.config();
 
 const postRegister = async (req: Request, res: Response) => {
     try {
-        const { name, email, password } = req.body;
-
         console.log("register event came");
+
+        const { name, email, password } = req.body;
 
         // check if user exists
         const userExists = await User.findOne({ email });
