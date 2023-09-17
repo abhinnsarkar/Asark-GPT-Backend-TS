@@ -31,9 +31,10 @@ mongoose
     });
 
 app.use(express.json());
+
 const allowedOrigins = [
-    "https://asark-gpt.onrender.com",
-    "http://localhost:3000/",
+    process.env.FRONTEND_PUBLIC,
+    process.env.FRONTEND_LOCAL,
 ];
 
 const corsOptions = {
