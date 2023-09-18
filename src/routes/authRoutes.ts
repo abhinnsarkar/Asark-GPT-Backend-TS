@@ -6,7 +6,6 @@ import authControllers from "../controllers/auth/authControllers";
 const router = express.Router();
 const validator = createValidator({});
 
-// Define a Joi schema for validation
 const registerSchema = Joi.object({
     name: Joi.string().min(3).max(30).required(),
     email: Joi.string().email().required(),
@@ -21,7 +20,6 @@ const loginSchema = Joi.object({
         .required(),
 });
 
-// Route handler with validation
 router.post(
     "/register",
     validator.body(registerSchema),

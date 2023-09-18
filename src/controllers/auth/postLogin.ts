@@ -23,7 +23,7 @@ const postLogin = async (req: Request, res: Response) => {
                     email: user.email,
                 },
             };
-            // const secretKey = config.get("jwtSecret");
+
             const secretKey = process.env.jwtSecret || "";
             const expires = { expiresIn: "7d" };
 
